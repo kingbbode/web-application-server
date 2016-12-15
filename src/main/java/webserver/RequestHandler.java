@@ -26,8 +26,6 @@ public class RequestHandler extends Thread {
     private Map<String, Set<String>> get;
     private Set<String> post;
 
-    private Map<String, User> user;
-
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
         this.get = new HashMap<>();
@@ -57,7 +55,8 @@ public class RequestHandler extends Thread {
             if("GET".equals(header.get("type")) && get.containsKey(urls[PATH])){
                 Map<String, String> params = HttpRequestUtils.parseQueryString(urls[PARAMETER]);
                 if(!ControllerUtils.isValidParameters(params, get.get(urls[PATH]))){
-                    DataBase.addUser(new User(params));
+                    User user = new User(params);
+                    DataBase.addUser(user);
                     log.info(user.toString());
                 }
                 urls[PATH] = index;
@@ -65,16 +64,15 @@ public class RequestHandler extends Thread {
             }else if("POST".equals(header.get("type")) && post.contains(urls[PATH])){
                 String body = IOUtils.readData(din, Integer.parseInt(header.get("length")));
                 Map<String, String> params = HttpRequestUtils.parseQueryString(body);
-                DataBase.addUser(new User(params));
+                User user = new User(params);
+                DataBase.addUser(user);
+                log.info(user.toString());
                 urls[PATH] = index;
                 status = "302";
-                log.info(user.toString());
-            }else if("POST".equals(header.get("type"))){
-                urls[PATH] = not_found;
             }
 
             DataOutputStream dos = new DataOutputStream(out);
-            File file = new File(root + UrlPatternUtils.resolve(header.get("url")));
+            File file = new File(root + UrlPatternUtils.resolve(urls[PATH]));
             if(!file.isFile()){
                 file = new File(root + not_found);
             }

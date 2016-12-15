@@ -11,10 +11,13 @@ public class UrlPatternUtils {
     }
 
     public static String[] parse(String url){
-        if(url != null){
+        if(url == null){
             return emptyUrls;
         }
         int index = url.indexOf("?");
+        if(index < 0){
+            return new String[]{url,null};
+        }
         String requestPath = url.substring(0, index);
         String queryString = url.substring(index+1);
 

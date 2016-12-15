@@ -1,5 +1,8 @@
 package util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -10,13 +13,15 @@ import java.util.Map;
  */
 public class RequestHeaderUtils {
 
+    private static final Logger log = LoggerFactory.getLogger(RequestHeaderUtils.class);
+
+
     public static Map<String, String> readHeader(BufferedReader in) throws IOException {
         String line;
         Map<String, String> header = new HashMap<>();
         while(!"".equals(line = in.readLine()) && line != null){
             parseHeader(header, line);
         }
-
         return header;
     }
 
