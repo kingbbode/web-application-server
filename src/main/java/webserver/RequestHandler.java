@@ -1,5 +1,6 @@
 package webserver;
 
+import controller.Controller;
 import db.DataBase;
 import model.User;
 import org.slf4j.Logger;
@@ -9,10 +10,7 @@ import util.*;
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class RequestHandler extends Thread {
     private static final int PATH = 0;
@@ -22,25 +20,13 @@ public class RequestHandler extends Thread {
     private static final String root = "webapp";
     private static final String not_found = "/404.html";
     private static final String index = "/index.html";
+    private static final String login_failed = "/user/login_failed";
     private Socket connection;
-    private Map<String, Set<String>> get;
-    private Set<String> post;
+    private Controller controller;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
-        this.get = new HashMap<>();
-        this.post = new HashSet<>();
-
-        //GET
-        Set<String> parameter = new HashSet<>();
-        parameter.add("userId");
-        parameter.add("password");
-        parameter.add("name");
-        parameter.add("email");
-        this.get.put("/user/create", parameter);
-
-        //POST
-        post.add("/user/create");
+        this.controller = new Controller();
     }
 
     public void run() {
@@ -52,23 +38,33 @@ public class RequestHandler extends Thread {
             Map<String, String> header = RequestHeaderUtils.readHeader(din);
             String status = "200";
             String[] urls = UrlPatternUtils.parse(header.get("url"));
-            if("GET".equals(header.get("type")) && get.containsKey(urls[PATH])){
+            if("GET".equals(header.get("type")) && controller.matchGet(urls[PATH])){
                 Map<String, String> params = HttpRequestUtils.parseQueryString(urls[PARAMETER]);
-                if(!ControllerUtils.isValidParameters(params, get.get(urls[PATH]))){
+                if(!ControllerUtils.isValidParameters(params, controller.getParameters(urls[PATH]))){
                     User user = new User(params);
                     DataBase.addUser(user);
                     log.info(user.toString());
                 }
                 urls[PATH] = index;
                 status = "302";
-            }else if("POST".equals(header.get("type")) && post.contains(urls[PATH])){
+            }else if("POST".equals(header.get("type")) && controller.matchPost(urls[PATH])){
                 String body = IOUtils.readData(din, Integer.parseInt(header.get("length")));
                 Map<String, String> params = HttpRequestUtils.parseQueryString(body);
-                User user = new User(params);
-                DataBase.addUser(user);
-                log.info(user.toString());
-                urls[PATH] = index;
-                status = "302";
+                if("/user/create".equals(urls[PATH])) {
+                    User user = new User(params);
+                    DataBase.addUser(user);
+                    log.info(user.toString());
+                    urls[PATH] = index;
+                    status = "302";
+                }else if("/user/login".equals(urls[PATH])){
+                    User user = DataBase.findUserById(params.get("userId"));
+                    if(user == null){
+                        urls[PATH] = login_failed;
+                    }
+                    if(!user.getPassword().equals(user)){
+                        urls[PATH] = login_failed;
+                    }
+                }
             }
 
             DataOutputStream dos = new DataOutputStream(out);
