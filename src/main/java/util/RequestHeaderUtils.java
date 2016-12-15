@@ -2,8 +2,6 @@ package util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,11 +10,10 @@ import java.util.Map;
  */
 public class RequestHeaderUtils {
 
-    public static Map<String, String> readHeader(InputStream in) throws IOException {
-        BufferedReader din = new BufferedReader(new InputStreamReader(in));
+    public static Map<String, String> readHeader(BufferedReader in) throws IOException {
         String line;
         Map<String, String> header = new HashMap<>();
-        while(!"".equals(line = din.readLine()) && line != null){
+        while(!"".equals(line = in.readLine()) && line != null){
             parseHeader(header, line);
         }
 
@@ -30,6 +27,11 @@ public class RequestHeaderUtils {
         }
         switch (tokens[0]){
             case "GET":
+                header.put("type", "GET");
+                header.put("url", tokens[1]);
+                break;
+            case "POST":
+                header.put("type", "POST");
                 header.put("url", tokens[1]);
                 break;
             case "HOST:":
@@ -41,10 +43,9 @@ public class RequestHeaderUtils {
             case "Accept:":
                 header.put("accept", tokens[1]);
                 break;
+            case "Content-Length:":
+                header.put("length", tokens[1]);
+                break;
         }
-    }
-
-    private static void setUrl(){
-
     }
 }
