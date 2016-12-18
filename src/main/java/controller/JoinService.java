@@ -20,7 +20,7 @@ public class JoinService extends Controller {
 
     @Override
     public void action(Request request, Response response) {
-        DataBase.addUser(new User(request.getBody()));
-        response.redirect("localhost:9000/index.html");
+        DataBase.addUser(new User(getParameters(request)));
+        response.redirect("http://localhost:9000/index.html");
     }
 }

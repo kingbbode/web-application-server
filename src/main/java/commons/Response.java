@@ -24,7 +24,7 @@ public class Response extends Header {
         this.dos = new DataOutputStream(out);
     }
 
-    public void forward(String url) throws IOException {
+    public void forward(String url, Template template) throws IOException {
         HttpStatusCode code = HttpStatusCode.OK;
         File file = new File(PathUtils.PREFIX + url);
         if (file == null || !file.isFile()) {
@@ -33,6 +33,9 @@ public class Response extends Header {
         }
         log.debug("response url : {}", file.toPath());
         byte[] body = Files.readAllBytes(file.toPath());
+        if(template != null){
+            body = template.replace(body);
+        }
         getHeaders().put("Content-Length", body.length + "");
         getHeaders().put("Content-Type", getHeaders().get("Accept") + ";charset=utf-8");
         responseHeader(code);

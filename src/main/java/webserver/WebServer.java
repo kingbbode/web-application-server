@@ -1,5 +1,7 @@
 package webserver;
 
+import db.DataBase;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +13,10 @@ public class WebServer {
     private static final int DEFAULT_PORT = 9000;
 
     public static void main(String args[]) throws Exception {
+        DataBase.addUser(new User("test1", "test", "test", "test"));
+        DataBase.addUser(new User("test2", "test", "test", "test"));
+        DataBase.addUser(new User("test3", "test", "test", "test"));
+        DataBase.addUser(new User("test4", "test", "test", "test"));
         int port = 0;
         if (args == null || args.length == 0) {
             port = DEFAULT_PORT;

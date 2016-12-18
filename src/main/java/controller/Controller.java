@@ -20,4 +20,11 @@ public abstract class Controller {
     }
 
     public abstract void action(Request request, Response response) throws IOException;
+
+    public Map<String, String> getParameters(Request request){
+        if(RequestType.GET.equals(this.requestType)){
+            return request.getUrl().getParameters();
+        }
+        return request.getBody();
+    }
 }

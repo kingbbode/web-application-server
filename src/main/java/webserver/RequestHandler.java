@@ -5,7 +5,6 @@ import commons.Response;
 import controller.ControllerChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import util.PathUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,7 +36,7 @@ public class RequestHandler extends Thread {
             log.debug("------------ end generate Response ---------------");
 
             if(!controller.matches(request)){
-                response.forward(PathUtils.NOT_FOUND);
+                response.forward(request.getUrl().getPath(), null);
                 return;
             }
             controller.execute(request, response);
