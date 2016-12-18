@@ -20,7 +20,7 @@ public class UserService extends Controller {
 
     @Override
     public void action(Request request, Response response) throws IOException {
-        if(!Boolean.parseBoolean(request.getHeaders().get("logined"))){
+        if (!Boolean.parseBoolean(request.getHeaders().get("logined"))) {
             response.redirect(PathUtils.LOGIN);
             return;
         }

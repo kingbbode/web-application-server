@@ -23,7 +23,7 @@ public class LoginService extends Controller {
         User user = DataBase.findUserById(request.getUrl().getParameters().get("userId"));
 
         if (user != null && user.matchPassword(request.getUrl().getParameters().get("password"))) {
-            request.getHeaders().put("Set-Cookie", "true");
+            request.getHeaders().put("Set-Cookie", "logined=true");
             des = "http://localhost:9000/index.html";
         }
 
