@@ -1,6 +1,7 @@
 package commons;
 
 import util.HttpRequestUtils;
+import util.PathUtils;
 
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public class URL {
     public URL(String url) {
         int index = url.indexOf("?");
         if(index < 0){
-            this. path = url;
+            this. path = PathUtils.resolve(url);
             return;
         }
         this.path = url.substring(0, index);

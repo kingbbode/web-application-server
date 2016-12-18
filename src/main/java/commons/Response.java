@@ -3,6 +3,7 @@ package commons;
 import enums.HttpStatusCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.PathUtils;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -23,12 +24,12 @@ public class Response extends Header {
         this.dos = new DataOutputStream(out);
     }
 
-    public void forword(String url) throws IOException {
+    public void forward(String url) throws IOException {
         HttpStatusCode code = HttpStatusCode.OK;
-        File file = new File("webapp" + url);
+        File file = new File(PathUtils.PREFIX + url);
         if (file == null || !file.isFile()) {
             code = HttpStatusCode.NOT_FOUND;
-            file = new File("webapp/404.html");
+            file = new File(PathUtils.PREFIX + PathUtils.NOT_FOUND);
         }
         log.debug("response url : {}", file.toPath());
         byte[] body = Files.readAllBytes(file.toPath());
@@ -38,11 +39,8 @@ public class Response extends Header {
         responseBody(body);
     }
 
-    public void redirect(String url, boolean isLogin) {
+    public void redirect(String url) {
         this.getHeaders().put("Location", url);
-        if (isLogin) {
-            this.getHeaders().put("Set-Cookie", "true");
-        }
         responseHeader(HttpStatusCode.FOUND);
     }
 
@@ -50,11 +48,12 @@ public class Response extends Header {
         for (Map.Entry entry : this.getHeaders().entrySet()) {
             dos.writeBytes(entry.getKey() + ": " + entry.getValue() + "\r\n");
         }
+        dos.writeBytes("\r\n");
     }
 
     private void responseHeader(HttpStatusCode code) {
         try {
-            dos.writeBytes("HTTP/1.1" + code.getMessage() + "\r\n");
+            dos.writeBytes("HTTP/1.1 " + code.getMessage() + "\r\n");
             putHeaderData();
         } catch (IOException e) {
             log.error(e.getMessage());
