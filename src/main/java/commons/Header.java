@@ -52,7 +52,7 @@ public class Header {
         return headers;
     }
 
-    public Map<String, String> getBody() {
+    protected Map<String, String> getBody() {
         return body;
     }
 }

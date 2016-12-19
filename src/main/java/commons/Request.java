@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by YG-MAC on 2016. 12. 18..
@@ -32,5 +33,12 @@ public class Request extends Header{
 
     public RequestType getType() {
         return type;
+    }
+
+    public Map<String, String> getParameters(){
+        if(RequestType.GET.equals(type)){
+            return this.url.getParameters();
+        }
+        return this.getBody();
     }
 }

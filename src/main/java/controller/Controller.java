@@ -21,10 +21,29 @@ public abstract class Controller {
 
     public abstract void action(Request request, Response response) throws IOException;
 
-    public Map<String, String> getParameters(Request request){
-        if(RequestType.GET.equals(this.requestType)){
-            return request.getUrl().getParameters();
+    public boolean checkParams(Map<String, String> map){
+        for(Class clazz : parameters.values()){
+            if(isCustomClass(clazz)){
+
+            }
         }
-        return request.getBody();
+
+
+        for (Map.Entry<String, Class> entry : parameters.entrySet()) {
+            if (!map.containsKey(entry.getKey()) || typeChecker(entry.getValue(), map.get(entry.getKey()))) {
+                return false;
+            }
+        }
+        return true;
+
+    }
+
+    private boolean typeChecker(Class clazz, Object object){
+        return false;
+    }
+
+    //귀찬으니 그냥.
+    private boolean isCustomClass(Class clazz){
+        return clazz.equals(String.class) || clazz.equals(Integer.class);
     }
 }

@@ -29,4 +29,8 @@ public class URL {
     public Map<String, String> getParameters() {
         return parameters;
     }
+
+    protected String getParameter(String name){
+        return parameters.get(name);
+    }
 }

@@ -20,9 +20,9 @@ public class LoginService extends Controller {
     @Override
     public void action(Request request, Response response) {
         String des = "http://localhost:9000/user/login_failed.html";
-        User user = DataBase.findUserById(getParameters(request).get("userId"));
+        User user = DataBase.findUserById(request.getParameters().get("userId"));
 
-        if (user != null && user.matchPassword(getParameters(request).get("password"))) {
+        if (user != null && user.matchPassword(request.getParameters().get("password"))) {
             request.getHeaders().put("Set-Cookie", "logined=true");
             des = "http://localhost:9000/index.html";
         }

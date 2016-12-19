@@ -40,8 +40,14 @@ public class ControllerChecker {
     }
 
     public boolean matches(Request request) {
-        return checkRegistered(request);
+        if(!checkRegistered(request)){
+            return false;
+        }
+        return checkParams(request);
         //타입체크까지는 도저히..
+    }
+    private boolean checkParams(Request request){
+        return this.controllers.get(request.getType()).get(request.getUrl().getPath()).checkParams(request.getParameters());
     }
 
     private boolean checkRegistered(Request request) {
